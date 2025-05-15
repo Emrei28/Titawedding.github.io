@@ -415,6 +415,53 @@ footer li {
 }
 
 
+        .comment-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .comment-item {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+        .comment-item:last-child {
+            border-bottom: none;
+        }
+        .comment-name {
+            font-weight: bold;
+            color: #333;
+        }
+        .comment-text {
+            color: #555;
+        }
+        .comment-date {
+            font-size: 0.8em;
+            color: #999;
+        }
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #007bff;
+        }
+        .comment-section {
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: var(--pink);
+            border: 1px solid var(--pink);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: white;
+            color: var(--pink);
+            border: 1px solid white;
+        }
+
+
+
+        
 
 @keyframes rotating {
   from {

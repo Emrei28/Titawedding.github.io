@@ -275,28 +275,23 @@
          </form>
 
           <div class="row justify-content-center mt-5">
-            <div class="col-md-6">
-              <div id="disqus_thread" data-aos="zoom-in" data-aos-duration="2000">
-                  <script>
-                      /**
-                      *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-                      *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
-                      /*
-                      var disqus_config = function () {
-                      this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
-                      this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
-                      };
-                      */
-                      (function() { // DON'T EDIT BELOW THIS LINE
-                      var d = document, s = d.createElement('script');
-                      s.src = 'https://tita-wedding.disqus.com/embed.js';
-                      s.setAttribute('data-timestamp', +new Date());
-                      (d.head || d.body).appendChild(s);
-                      })();
-                  </script>
-                  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-              </div>
-             </div>
+                <div class="col-md-6">
+                    <div class="comment-section" data-aos="fade-up" data-aos-duration="1000">
+                        <h3 class="text-center mb-4">Ucapan & Doa</h3>
+                        <form id="commentForm">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nama</label>
+                                <input type="text" class="form-control" id="name" placeholder="Masukkan nama Anda" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Komentar</label>
+                                <textarea class="form-control" id="comment" rows="4" placeholder="Tulis ucapan atau doa Anda" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Kirim Komentar</button>
+                        </form>
+                        <div class="comment-list" id="commentList"></div>
+                    </div>
+                </div>
             </div>
           </div>
         </div>
@@ -365,7 +360,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bs5-lightbox@1.8.5/dist/index.bundle.min.js"></script>
-
 
     <script>
         simplyCountdown('.simply-countdown', {
@@ -480,9 +474,105 @@
     </script>
     
     <!-- AOS -->
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
       AOS.init();
+     </script>
+
+     <!-- Firebase SDK -->
+    <script type="module">
+      // Impor Firebase
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+      // Konfigurasi Firebase
+      const firebaseConfig = {
+          apiKey: "AIzaSyCU_bds2bi2DuT9GmS9bTFrQtgKLESfqbk",
+          authDomain: "undangandigitaltita.firebaseapp.com",
+          projectId: "undangandigitaltita",
+          storageBucket: "undangandigitaltita.firebasestorage.app",
+          messagingSenderId: "524109520664",
+          appId: "1:524109520664:web:435c6af51fcc9e00d0c86d",
+          measurementId: "G-KWW8LD5XG9"
+      };
+
+      // Inisialisasi Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      // Fungsi untuk format tanggal
+      function formatDate(timestamp) {
+          const options = { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+          return new Date(timestamp).toLocaleDateString('id-ID', options);
+      }
+
+      // Fungsi untuk menyimpan komentar ke Firestore
+      async function saveComment(name, comment) {
+          try {
+              await addDoc(collection(db, 'comments'), {
+                  name: name,
+                  comment: comment,
+                  timestamp: serverTimestamp()
+              });
+              console.log('Komentar berhasil disimpan:', name, comment);
+          } catch (error) {
+              console.error('Error menyimpan komentar:', error);
+              alert('Gagal menyimpan komentar: ' + error.message);
+          }
+      }
+
+      // Fungsi untuk memuat dan menampilkan komentar
+      function loadComments() {
+          const commentList = document.getElementById('commentList');
+          onSnapshot(collection(db, 'comments'), { includeMetadataChanges: true }, (snapshot) => {
+              console.log('Memuat komentar, jumlah:', snapshot.size);
+              commentList.innerHTML = '';
+              if (snapshot.empty) {
+                  commentList.innerHTML = '<p class="text-center text-muted">Belum ada ucapan. Jadilah yang pertama!</p>';
+                  return;
+              }
+              snapshot.forEach(doc => {
+                  const comment = doc.data();
+                  const commentDiv = document.createElement('div');
+                  commentDiv.className = 'comment-item';
+                  commentDiv.innerHTML = `
+                      <div class="comment-name">${comment.name}</div>
+                      <div class="comment-text">${comment.comment}</div>
+                      <div class="comment-date">${comment.timestamp ? formatDate(comment.timestamp.toDate()) : 'Baru saja'}</div>
+                  `;
+                  commentList.appendChild(commentDiv);
+              });
+              setTimeout(() => {
+                  commentList.scrollTop = commentList.scrollHeight;
+                  console.log('Discroll ke bawah, posisi:', commentList.scrollTop);
+              }, 100);
+          }, (error) => {
+              console.error('Error memuat komentar:', error);
+              commentList.innerHTML = '<p class="text-center text-danger">Gagal memuat ucapan: ' + error.message + '</p>';
+          });
+      }
+
+      // Event listener untuk form submit
+      document.getElementById('commentForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const name = document.getElementById('name').value.trim();
+          const comment = document.getElementById('comment').value.trim();
+          if (name && comment) {
+              const rsvpSection = document.getElementById('rsvp');
+              const scrollPosition = window.scrollY;
+              document.querySelector(':root').style.scrollBehavior = 'auto';
+              await saveComment(name, comment);
+              this.reset();
+              alert('Komentar berhasil dikirim!');
+              window.scrollTo(0, rsvpSection.offsetTop);
+              setTimeout(() => {
+                  document.querySelector(':root').style.scrollBehavior = 'smooth';
+              }, 100);
+          }
+      });
+
+      // Panggil loadComments setelah DOM dimuat
+      document.addEventListener('DOMContentLoaded', loadComments);
     </script>
 
     <!-- Particles.js -->
