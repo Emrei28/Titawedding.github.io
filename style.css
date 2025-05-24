@@ -183,13 +183,6 @@ body {
   font-family: 'Cormorant Upright';
 }
 
-.story{
-  background-image: url(img/bg.png);
-  background-size: cover;
-}
-
-.story,
-.gallery,
 .rsvp,
 .gifts {
   padding-top: 10rem;
@@ -364,6 +357,33 @@ body {
   border: none;
   outline: none;
 }
+
+.closing{
+  background-image: url(img/bg.png);
+  background-size: cover;
+}
+
+.closing p{
+  color: black;
+  font-family:'Cormorant Upright';
+  margin-top: 40px;
+  margin-bottom: 50px;
+  font-size: 1.5rem;
+
+}
+
+.closing img{
+  width: 50px;
+  height: 50px;
+  margin-top: 20px;
+}
+
+.closing h1{
+  color: black;
+  font-family: 'Allura';
+  margin-bottom: 50px;
+}
+
 
 footer {
   padding: 3rem;
